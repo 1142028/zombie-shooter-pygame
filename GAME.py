@@ -9,15 +9,15 @@ from modules import Zombie
 from modules import Bullet
 from modules import Machine
 from modules import GameStart
+from modules import State
 #from modules import background
 
 dir = os.path.dirname(os.path.dirname(__file__))
 
 pygame.init()
-
 SCREEN_W, SCREEN_H = SCREEN_SCALE = pygame.display.Info().current_w, pygame.display.Info().current_h
 SCREEN = pygame.display.set_mode(SCREEN_SCALE)
-pygame.display.set_caption("GAME_TEST")
+pygame.display.set_caption("GAME")
 clock = pygame.time.Clock()
 last_score_update_time = time.time()
 
@@ -53,12 +53,16 @@ machine = Machine(machine_X, machine_Y, machine_SCALE, man)
 machine_sprites = pygame.sprite.Group(machine)
 
 #background
-background1 = pygame.image.load(os.path.join(dir,'GAME_TEST', 'resources', 'images', 'background.png'))
+background1 = pygame.image.load(os.path.join(dir,'2.5D橫向捲軸射擊', 'resources', 'images', 'background.png'))
+
+#State
+state = State.State(man)
+state.man.health = 100
 
 space_change = False
 space_change_wait = 0
 
-game_over = True
+game_over = False
 game_start = True
 
 while game_start:
@@ -135,15 +139,17 @@ while not game_over:
     #Man
     if not man.isdeath and not zombie.isdeath: 
             if man.rect.colliderect(zombie.rect):
-                man.isdeath = True
-                man.index = 0
+                state.Health()
+                if man.health <= 0 :
+                    man.isdeath = True
+                    man.index = 0
 
     #zombie
     if not zombie.isdeath:
         if zombie.hit >= 30:
             zombie.isdeath = True
             zombie.index = 0
-    elif zombie.isdeath and space_change==True:
+    elif space_change==True:
         zombie.isdeath = False
         zombie.rect.x, zombie.rect.y = SCREEN_W // 1.2, SCREEN_H // 2
         zombie.hit = 0
@@ -156,10 +162,12 @@ while not game_over:
         if space_change_wait >= 40:
             space_change_wait = 0
             man.rect.x, man.rect.y= SCREEN_W // 10, SCREEN_H // 2
+            zombie.rect.x, zombie.rect.y = SCREEN_W // 1.2, SCREEN_H // 2
             space_change = False  
 
     #TEST
-    print(man.rect,zombie.rect)
+    for event in pygame.event.get():
+        print(event) 
 
     pygame.display.update()
     clock.tick(144)
