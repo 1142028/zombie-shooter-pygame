@@ -10,7 +10,7 @@ class background(pygame.sprite.Sprite):
         self.man = man
         self.screen_width = screen_width
         self.images = pygame.image.load(os.path.join(self.dir, 'resources', 'images', 'background2.png'))
-        self.data = [pygame.transform.scale(self.images.subsurface(pygame.Rect(i * 512, 0, 512, 341)), self.scale) for i in range(8)]
+        self.data = [pygame.transform.scale(self.images.subsurface(pygame.Rect(i * 512, 0, 512, 288)), self.scale) for i in range(3)]
         self.current_action = 0
         self.image = self.data[self.current_action]
         self.rect = self.image.get_rect(topleft=(x, y))

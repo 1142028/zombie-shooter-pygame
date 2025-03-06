@@ -9,8 +9,8 @@ class Man(pygame.sprite.Sprite):
         super().__init__()
         self.image = pygame.image.load(os.path.join(self.dir, 'resources', 'images', 'Man.png'))
         self.scale = scale
-        self.animation = [pygame.transform.scale(self.image.subsurface(pygame.Rect(i * 64, 0, 64, 64)), self.scale) for i in range(12)]
-        self.death = [pygame.transform.scale(self.image.subsurface(pygame.Rect(i * 64, 0, 64, 64)), self.scale) for i in range(12,18)]
+        self.animation = [pygame.transform.scale(self.image.subsurface(pygame.Rect(i * 35, 0, 35, 36)), self.scale) for i in range(13)]
+        self.death = [pygame.transform.scale(self.image.subsurface(pygame.Rect(i * 35, 0, 35, 36)), self.scale) for i in range(14,20)]
         self.rect = self.animation[0].get_rect(topleft=(x, y))
         self.rect = self.rect.inflate(100-self.rect.width,0)
         self.isdeath=False
@@ -35,16 +35,16 @@ class Man(pygame.sprite.Sprite):
                 self.current_speed = 0.2
             elif keys[pygame.K_e]:
                 self.current_action = "shoot"
-                self.current_speed = 0.07
+                self.current_speed = 0.05
             elif keys[pygame.K_d] and self.rect.x < self.screen_width and not (self.rect.x <= -self.rect.width):
                 self.current_action = "walk"
                 self.rect.x += 6
                 self.current_speed = 0.13
-            elif keys[pygame.K_w] and self.rect.y + self.rect.height  >= self.screen_height *0.66:
+            elif keys[pygame.K_w] and self.rect.y + self.rect.height  >= self.screen_height *0.61:
                 self.current_action = "walk"
                 self.rect.y -= 3
                 self.current_speed = 0.13
-            elif keys[pygame.K_s] and self.rect.y + self.rect.height  <= self.screen_height *0.9:
+            elif keys[pygame.K_s] and self.rect.y + self.rect.height  <= self.screen_height *0.83:
                 self.current_action = "walk"
                 self.rect.y += 3
                 self.current_speed = 0.13
@@ -71,12 +71,12 @@ class Man(pygame.sprite.Sprite):
                             self.index = 0
                     elif self.current_action == "shoot" and not self.isdeath:
                         self.index += 1
-                        if self.index >= 12:
+                        if self.index >= 13:
                             self.index = 9
                     else:
                         self.index += 1
-                        if self.index >= 9:
-                            self.index = 4
+                        if self.index >= 11:
+                            self.index = 5
                             
                 self.last_score_update_time = current_time
 
@@ -85,3 +85,4 @@ class Man(pygame.sprite.Sprite):
             return self.animation[self.index] if 0 <= self.index < len(self.animation) else self.animation[0]
         else:
             return self.death[self.index]
+        

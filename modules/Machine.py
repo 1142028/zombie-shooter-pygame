@@ -1,5 +1,6 @@
 import pygame
 import os
+import random
 
 class Machine(pygame.sprite.Sprite):
     dir = os.path.dirname(os.path.dirname(__file__))
@@ -8,19 +9,31 @@ class Machine(pygame.sprite.Sprite):
         super().__init__()
         self.scale = scale
         self.images = pygame.image.load(os.path.join(self.dir, 'resources', 'images', 'Machine.png'))
-        self.image = [pygame.transform.scale(self.images.subsurface(pygame.Rect(i * 50, 0, 50, 128)), self.scale) for i in range(6)]
+        self.image = [pygame.transform.scale(self.images.subsurface(pygame.Rect(i * 23, 0, 23, 34)), self.scale) for i in range(6)]
         self.rect = self.images.get_rect(topleft=(x, y))
         self.man = man
         self.index = 0
+
     def update(self):
-        keys = pygame.key.get_pressed()
-        if self.rect.colliderect(self.man.rect) and keys[pygame.K_r]:
-                self.business()
+        pass
 
     def business(self):
-        #if self.index == 0:
-        self.man.current_speed += 1
-        
+        if self.index == 0:
+            pass
+        if self.index == 1:
+            pass
+        if self.index == 2:
+            pass
+        if self.index == 3:
+            pass
+        if self.index == 4:
+            pass
+        if self.index == 5:
+            pass
+
+    def change(self):
+        self.index = random.choice(range(6))
+         
     def get_image(self):
         if self.index >= len(self.image):
             self.index = 0

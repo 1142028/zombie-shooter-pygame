@@ -10,8 +10,8 @@ class Zombie(pygame.sprite.Sprite):
         super().__init__()
         self.image = pygame.image.load(os.path.join(self.dir, 'resources', 'images', 'Zombie.png'))
         self.scale = scale
-        self.animation = [pygame.transform.scale(self.image.subsurface(pygame.Rect(i * 64, 0, 64, 64)), self.scale) for i in range(9)]
-        self.death = [pygame.transform.scale(self.image.subsurface(pygame.Rect(i * 64, 0, 64, 64)), self.scale) for i in range(9,14)]
+        self.animation = [pygame.transform.scale(self.image.subsurface(pygame.Rect(i * 33, 0, 33, 35)), self.scale) for i in range(11)]
+        self.death = [pygame.transform.scale(self.image.subsurface(pygame.Rect(i * 33, 0, 33, 35)), self.scale) for i in range(11,16)]
         self.rect = self.animation[1].get_rect(topleft=(x, y))
         self.index = 0
         self.hit = 0
@@ -29,13 +29,18 @@ class Zombie(pygame.sprite.Sprite):
             self.current_action = "death"
             self.current_speed = 0.15
         elif self.rect.colliderect(self.man.rect):
+            if self.man.isdeath == True:
                 self.current_action = "idle"
-                self.current_speed = 0.15
+                self.current_speed = 0.2
+            else:
+                self.current_action = "attack"
+                self.current_speed = 0.2
+
         else:
             if (keys[pygame.K_LEFT] or not self.rect.colliderect(self.man.rect)) and self.rect.x > 0:
                 self.current_action = "walk"
                 self.rect.x -= 3.3
-                self.current_speed = 0.2
+                self.current_speed = 0.18
             if (keys[pygame.K_UP] or not self.man.rect.y >= self.rect.y) and self.rect.x <= self.screen_width:
                 self.current_action = "walk"
                 self.current_speed = 0.14
@@ -55,14 +60,18 @@ class Zombie(pygame.sprite.Sprite):
                         self.index = len(self.death) - 1
                         self.isdeath = True
             else:
-                if self.current_action == "walk":
+                if self.current_action == "idle":
                     self.index += 1
                     if self.index >= 4:
                         self.index = 0
+                elif self.current_action == "attack" and not self.isdeath:
+                    self.index += 1
+                    if self.index >= 11:
+                            self.index = 9
                 else:
                     self.index += 1
                     if self.index >= 9:
-                        self.index = 4
+                        self.index = 5
 
             self.last_score_update_time = current_time
 
