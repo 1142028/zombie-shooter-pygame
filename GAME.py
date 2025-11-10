@@ -33,7 +33,7 @@ man = Man(MAN_X, MAN_Y, MAN_SCALE, SCREEN_W, SCREEN_H)
 man_sprites = pygame.sprite.Group(man)
 
 #Zombie
-ZOMBIE_X, ZOMBIE_Y = SCREEN_W // 1.2, SCREEN_H // 2
+ZOMBIE_X, ZOMBIE_Y = SCREEN_W , SCREEN_H // 2
 ZOMBIE_SCALE= SCREEN_W // 12, SCREEN_H // 7
 zombie = Zombie(ZOMBIE_X, ZOMBIE_Y, ZOMBIE_SCALE, SCREEN_W, man)
 zombie_sprites = pygame.sprite.Group(zombie)
@@ -41,7 +41,7 @@ zombies = []
 
 #Bullet
 bullet_X, bullet_Y = man.rect.center
-bullet_SCALE = SCREEN_W // 9, SCREEN_H // 4
+bullet_SCALE = (15*4, 1*4)
 bullet = Bullet(bullet_X, bullet_Y, bullet_SCALE, SCREEN_W, man_instance)
 bullet_sprites = pygame.sprite.Group(bullet)
 bullets = []
@@ -61,6 +61,7 @@ background2 = background(background_X, background_Y, background_SCALE, SCREEN_W,
 #State
 health_scale = (85,14)
 health_x, health_y = (man.rect.x,man.rect.y) 
+zombie_health_x, zombie_health_y= (zombie.rect.x,zombie.rect.y) 
 state = State(health_scale, health_x, health_y, man)
 state.man.health = 100
 
@@ -77,7 +78,7 @@ while game_start:
             game_start = False
         elif pygame.key.get_pressed()[pygame.K_ESCAPE]:
             game_start = False
-        elif gamestart.current_action == "START_TOUCH":
+        elif gamestart.current_action == "START_TOUCH" or pygame.key.get_pressed()[pygame.K_SPACE]:
             game_start = False
             game = True
         elif gamestart.current_action == "EXIT_TOUCH":
@@ -107,11 +108,12 @@ while game:
     #screen
     SCREEN.fill((150,150,200))
     SCREEN.blit(background1, (0,SCREEN_H*0.6))
-    SCREEN.blit(background2.image, (background_X, background_Y))
+    background2.update(SCREEN)
     pygame.draw.rect(SCREEN, (36,32,49), [0, SCREEN_H * 0.96, SCREEN_W, SCREEN_H])
     SCREEN.blit(state.current_health_image, (health_x, health_y))
 
     if man.rect.y >= zombie.rect.y:
+        SCREEN.blit(zombie.current_health_image, (zombie_health_x, zombie_health_y))
         SCREEN.blit(zombie.get_image(), zombie.rect.topleft)
         SCREEN.blit(machine.get_image(), machine.rect.topleft)
         SCREEN.blit(man.get_image(), man.rect.topleft)
@@ -120,28 +122,18 @@ while game:
         SCREEN.blit(machine.get_image(), machine.rect.topleft)
         SCREEN.blit(man.get_image(), man.rect.topleft)
         SCREEN.blit(state.current_health_image, (health_x, health_y))
+        SCREEN.blit(zombie.current_health_image, (zombie_health_x, zombie_health_y))
         SCREEN.blit(zombie.get_image(), zombie.rect.topleft)
     if man.rect.y + man.rect.height <= SCREEN_H*0.62:
         SCREEN.blit(man.get_image(), man.rect.topleft)
         SCREEN.blit(state.current_health_image, (health_x, health_y))
+        SCREEN.blit(zombie.current_health_image, (zombie_health_x, zombie_health_y))
         SCREEN.blit(zombie.get_image(), zombie.rect.topleft)
         SCREEN.blit(machine.get_image(), machine.rect.topleft)        
 
     #bullet
-    bullet_X, bullet_Y = man.rect.x - 80, man.rect.y - 73
-    for bullet in bullets:
-        bullet.update() 
-        if bullet.rect.x >= SCREEN_W :
-            bullets.remove(bullet)
-        elif bullet.rect.x + bullet.rect.width >= zombie.rect.x + zombie.rect.width//2:
-                if not zombie.isdeath:
-                    zombie.rect.x +=0.2
-                    zombie.hit += 1
-                    bullets.remove(bullet)
-                else:
-                    SCREEN.blit(bullet.get_image(), bullet.rect.topleft)
-        else:
-            SCREEN.blit(bullet.get_image(), bullet.rect.topleft)
+    bullet_X, bullet_Y = man.rect.x + 70, man.rect.y + 75
+    Bullet.handle_bullets(SCREEN, bullets, zombie)
     if man.current_action == "shoot" and man.index == 11:
         man_instance = True
         new_bullet = Bullet(bullet_X, bullet_Y, bullet_SCALE, SCREEN_W, man_instance)
@@ -157,33 +149,36 @@ while game:
 
     #State
     health_x, health_y = (man.rect.x + 15,man.rect.y - 15) 
+    zombie_health_x, zombie_health_y= (zombie.rect.x + 50,zombie.rect.y - 15) 
 
     #Machine
     machine.business()
     
     #zombie
     if not zombie.isdeath:
-        if zombie.hit >= 30:
+        zombie.health()
+        if zombie.hit <= 0:
             zombie.isdeath = True
             zombie.index = 0
 
     #space_change
     if space_change:
         SCREEN.fill((20, 20, 20))
+        background2.reset()
         machine.change()
         space_change_wait += 1
         if space_change_wait >= 40:
             space_change_wait = 0
-            man.rect.x, man.rect.y= SCREEN_W // 10, SCREEN_H // 2
+            man.rect.x= SCREEN_W // 12
             zombie.rect.x, zombie.rect.y = SCREEN_W // 1.2, SCREEN_H // 2
-            zombie.hit = 0
+            zombie.hit = 30
             zombie.isdeath = False
             space_change = False  
 
     print(state.man.health)
 
     pygame.display.update()
-    clock.tick(300)
+    clock.tick(144)
 
 pygame.quit()
 sys.exit()

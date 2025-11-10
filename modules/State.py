@@ -7,7 +7,7 @@ class State(pygame.sprite.Sprite):
     def __init__(self, health_scale, health_x, health_y, man):
         super().__init__()
         self.health_scale = health_scale
-        self.health_images = pygame.image.load(os.path.join(self.dir, 'resources', 'images', 'health.png'))
+        self.health_images = pygame.image.load(os.path.join(self.dir, 'resources', 'images', 'health.png')).convert_alpha()
         self.health_image = [pygame.transform.scale(self.health_images.subsurface(pygame.Rect(i * 46, 0, 46, 7)), self.health_scale) for i in range(7)]
         self.health_rect = self.health_images.get_rect(topleft=(health_x, health_y))
         self.current_health_image = self.health_image[0]

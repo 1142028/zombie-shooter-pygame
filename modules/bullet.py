@@ -10,7 +10,7 @@ class Bullet(pygame.sprite.Sprite):
     def __init__(self, x, y, scale, screen_width, man_instance):
         super().__init__()
         self.scale = scale
-        self.images = pygame.transform.scale(pygame.image.load(os.path.join(self.dir, 'resources', 'images', 'bullet.png')),self.scale)
+        self.images = pygame.transform.scale(pygame.image.load(os.path.join(self.dir, 'resources', 'images', 'bullet.png')).convert_alpha(),self.scale)
         self.rect = self.images.get_rect(topleft=(x, y))
         self.current_action = False
         self.current_speed = 0.1
@@ -33,3 +33,16 @@ class Bullet(pygame.sprite.Sprite):
 
     def get_image(self):
         return self.images
+
+    def handle_bullets(screen, bullets, zombie):
+        for bullet in bullets[:]:
+            bullet.update()
+            if bullet.rect.colliderect(zombie.rect) and bullet.rect.x + bullet.rect.width >= zombie.rect.x + zombie.rect.width // 1.5:
+                if not zombie.isdeath:
+                    zombie.rect.x += 0.2 
+                    zombie.hit -= 1 
+                    bullets.remove(bullet)  
+                else:
+                    screen.blit(bullet.get_image(), bullet.rect.topleft)
+            else:
+                screen.blit(bullet.get_image(), bullet.rect.topleft)

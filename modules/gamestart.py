@@ -7,7 +7,7 @@ class GameStart(pygame.sprite.Sprite):
     def __init__(self, x, y, scale):
         super().__init__()
         self.scale = scale
-        self.images = pygame.image.load(os.path.join(self.dir, 'resources', 'images', 'GameStart.png'))
+        self.images = pygame.image.load(os.path.join(self.dir, 'resources', 'images', 'GameStart.png')).convert_alpha()
         self.data = [pygame.transform.scale(self.images.subsurface(pygame.Rect(i * 640, 0, 640, 360)), self.scale) for i in range(5)]
         self.current_action = "original"
         self.image = self.data[0]

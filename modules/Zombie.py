@@ -8,13 +8,17 @@ class Zombie(pygame.sprite.Sprite):
 
     def __init__(self, x, y, scale, screen_width, man):
         super().__init__()
-        self.image = pygame.image.load(os.path.join(self.dir, 'resources', 'images', 'Zombie.png'))
+        self.image = pygame.image.load(os.path.join(self.dir, 'resources', 'images', 'Zombie.png')).convert_alpha()
         self.scale = scale
+        self.health_scale = (85,14)
         self.animation = [pygame.transform.scale(self.image.subsurface(pygame.Rect(i * 33, 0, 33, 35)), self.scale) for i in range(11)]
         self.death = [pygame.transform.scale(self.image.subsurface(pygame.Rect(i * 33, 0, 33, 35)), self.scale) for i in range(11,16)]
+        self.health_images = pygame.image.load(os.path.join(self.dir, 'resources', 'images', 'Zombie_health.png')).convert_alpha()
+        self.health_image = [pygame.transform.scale(self.health_images.subsurface(pygame.Rect(i * 46, 0, 46, 7)), self.health_scale) for i in range(7)]
+        self.current_health_image = self.health_image[0]
         self.rect = self.animation[1].get_rect(topleft=(x, y))
         self.index = 0
-        self.hit = 0
+        self.hit = 30
         self.isdeath=False
         self.man = man
         self.current_action = "idle"
@@ -39,7 +43,7 @@ class Zombie(pygame.sprite.Sprite):
         else:
             if (keys[pygame.K_LEFT] or not self.rect.colliderect(self.man.rect)) and self.rect.x > 0:
                 self.current_action = "walk"
-                self.rect.x -= 3.3
+                self.rect.x -= 2.3
                 self.current_speed = 0.18
             if (keys[pygame.K_UP] or not self.man.rect.y >= self.rect.y) and self.rect.x <= self.screen_width:
                 self.current_action = "walk"
@@ -75,7 +79,23 @@ class Zombie(pygame.sprite.Sprite):
 
             self.last_score_update_time = current_time
 
-    def get_image(self):
+    def health(self):
+        if self.hit >= 30:
+            self.current_health_image = self.health_image[0] 
+        elif self.hit >= 25:
+            self.current_health_image = self.health_image[1]
+        elif self.hit >= 20:
+            self.current_health_image = self.health_image[2]
+        elif self.hit >= 15:
+            self.current_health_image = self.health_image[3]
+        elif self.hit >= 10:
+            self.current_health_image = self.health_image[4]
+        elif self.hit >= 5:
+            self.current_health_image = self.health_image[5]
+        else:
+            self.current_health_image = self.health_image[6] 
+
+    def get_image(self):    
         if not self.isdeath:
             return self.animation[self.index]
         else:

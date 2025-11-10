@@ -7,7 +7,7 @@ class Man(pygame.sprite.Sprite):
 
     def __init__(self, x, y, scale, screen_width, screen_height):
         super().__init__()
-        self.image = pygame.image.load(os.path.join(self.dir, 'resources', 'images', 'Man.png'))
+        self.image = pygame.image.load(os.path.join(self.dir, 'resources', 'images', 'Man.png')).convert_alpha()
         self.scale = scale
         self.animation = [pygame.transform.scale(self.image.subsurface(pygame.Rect(i * 35, 0, 35, 36)), self.scale) for i in range(13)]
         self.death = [pygame.transform.scale(self.image.subsurface(pygame.Rect(i * 35, 0, 35, 36)), self.scale) for i in range(14,20)]
@@ -35,10 +35,10 @@ class Man(pygame.sprite.Sprite):
                 self.current_speed = 0.2
             elif keys[pygame.K_e]:
                 self.current_action = "shoot"
-                self.current_speed = 0.05
+                self.current_speed = 0.09
             elif keys[pygame.K_d] and self.rect.x < self.screen_width and not (self.rect.x <= -self.rect.width):
                 self.current_action = "walk"
-                self.rect.x += 6
+                self.rect.x += 4
                 self.current_speed = 0.13
             elif keys[pygame.K_w] and self.rect.y + self.rect.height  >= self.screen_height *0.61:
                 self.current_action = "walk"
